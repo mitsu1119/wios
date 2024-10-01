@@ -1,6 +1,8 @@
 #![no_std]
 #![no_main]
 
+mod vector_table;
+
 use core::panic::PanicInfo;
 
 #[panic_handler]
