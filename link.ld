@@ -15,4 +15,22 @@ SECTIONS {
 	.text : {
 		*(.text .text.*);
 	} > FLASH
+
+    .rodata : {
+        *(.rodata .rodata.*);
+    } > FLASH
+
+    .bss (NOLOAD) : {
+        _sbss = .;
+        *(.bss .bss.*);
+        _ebss = .;
+    } > RAM
+
+    .data : AT(ADDR(.rodata) + SIZEOF(.rodata)) {
+        _sdata = .;
+        *(.data .data.*);
+        _edata = .;
+    } > RAM
+
+    _sidata = LOADADDR(.data);
 }

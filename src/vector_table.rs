@@ -1,3 +1,5 @@
+use crate::reset;
+
 // vector table のエントリ
 pub union Vector {
     reserved: u32,
@@ -24,7 +26,7 @@ pub extern "C" fn default_exception_handler() {
 #[link_section = ".vector_table.exceptions"]
 #[no_mangle]
 pub static EXCEPTIONS: [Vector; 15] = [
-    Vector::new(default_exception_handler), // 1. Reset
+    Vector::new(reset::reset),              // 1. Reset
     Vector::new(default_exception_handler), // 2. NMI
     Vector::new(default_exception_handler), // 3. HardFault
     Vector::new(default_exception_handler), // 4. MemManage
