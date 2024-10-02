@@ -40,7 +40,34 @@ pub unsafe extern "C" fn process_exec(sp_process: u32) -> u32 {
     next_sp
 }
 
-pub extern "C" fn process_main() {
+pub struct Process {
+    sp_process: u32,
+}
+
+impl Process {
+    pub fn new(ps_stack: &PsStack, ps_main: extern "C" fn() -> !) -> Self {
+        let sp_process = ps_stack.0.as_ptr() as u32
+            + unsafe { ps_stack.0.assume_init_ref().len() as u32 }
+            - 0x20;
+        let context_frame: &mut ContextFrame = unsafe { &mut *(sp_process as *mut ContextFrame) };
+        context_frame.r0 = 0;
+        context_frame.r1 = 0;
+        context_frame.r2 = 0;
+        context_frame.r3 = 0;
+        context_frame.r12 = 0;
+        context_frame.lr = 0;
+        context_frame.return_address = ps_main as u32;
+        context_frame.xpsr = 0x0100_0000;
+
+        Self { sp_process }
+    }
+
+    pub fn exec(&mut self) {
+        self.sp_process = unsafe { process_exec(self.sp_process) };
+    }
+}
+
+pub extern "C" fn process_main() -> ! {
     let mut cnt = 0;
     loop {
         hprintln!("process_main {}", cnt);

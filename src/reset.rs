@@ -3,7 +3,7 @@ use core::ptr::{self, addr_of, addr_of_mut};
 use cortex_m_semihosting::hprintln;
 
 use crate::{
-    process::{self, process_exec, ContextFrame, PS_STACK, PS_STACK_SIZE},
+    process::{self, Process, PS_STACK},
     systick,
 };
 
@@ -27,20 +27,9 @@ pub unsafe extern "C" fn reset() {
 
     systick_init();
 
-    let ps_stack = PS_STACK.0.as_ptr() as u32 + PS_STACK_SIZE as u32 - 0x20;
-    let context_frame: &mut ContextFrame = &mut *(ps_stack as *mut ContextFrame);
-    context_frame.r0 = 0;
-    context_frame.r1 = 0;
-    context_frame.r2 = 0;
-    context_frame.r3 = 0;
-    context_frame.r12 = 0;
-    context_frame.lr = 0;
-    context_frame.return_address = process::process_main as u32;
-    context_frame.xpsr = 0x0100_0000;
-
-    let mut next_ps_stack = ps_stack;
+    let mut ps1 = Process::new(&PS_STACK, process::process_main);
     for _ in 0..10 {
-        next_ps_stack = process_exec(next_ps_stack);
+        ps1.exec();
     }
 
     loop {}
