@@ -1,4 +1,4 @@
-use crate::{reset, systick};
+use crate::{reset, svcall, systick};
 
 // vector table のエントリ
 pub union Vector {
@@ -35,7 +35,7 @@ pub static EXCEPTIONS: [Vector; 15] = [
     Vector::reserved(),
     Vector::reserved(),
     Vector::reserved(),
-    Vector::new(default_exception_handler), // 11. SVCall
+    Vector::new(svcall::svcall),            // 11. SVCall
     Vector::new(default_exception_handler), // 12. DebugMonitor
     Vector::reserved(),
     Vector::new(default_exception_handler), // 14. PendSV

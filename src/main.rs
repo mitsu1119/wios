@@ -1,7 +1,9 @@
 #![no_std]
 #![no_main]
+#![feature(naked_functions)]
 
 mod reset;
+mod svcall;
 #[allow(dead_code)]
 mod systick;
 mod vector_table;

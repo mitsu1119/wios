@@ -22,14 +22,16 @@ pub unsafe extern "C" fn reset() {
     let data_len = addr_of!(_edata) as usize - addr_of!(_sdata) as usize;
     ptr::copy_nonoverlapping(addr_of!(_sidata), addr_of_mut!(_sdata), data_len);
 
-    hprintln!("Hello World!");
+    systick_init();
 
-    // SysTick initialize
+    loop {}
+}
+
+fn systick_init() {
+    // SysTick 初期化
     hprintln!("SysTick init");
     systick::enable();
     systick::enable_interrupt();
     systick::set_rvr(1 << 23);
     systick::clear_cvr();
-
-    loop {}
 }
