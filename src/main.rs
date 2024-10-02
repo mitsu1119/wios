@@ -2,6 +2,7 @@
 #![no_main]
 #![feature(naked_functions)]
 
+mod process;
 mod reset;
 mod svcall;
 #[allow(dead_code)]
