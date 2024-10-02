@@ -27,7 +27,7 @@ pub unsafe extern "C" fn reset() {
 
     systick_init();
 
-    let ps_stack = addr_of!(PS_STACK) as u32 + PS_STACK_SIZE as u32 - 0x20;
+    let ps_stack = PS_STACK.0.as_ptr() as u32 + PS_STACK_SIZE as u32 - 0x20;
     let context_frame: &mut ContextFrame = &mut *(ps_stack as *mut ContextFrame);
     context_frame.r0 = 0;
     context_frame.r1 = 0;
@@ -38,9 +38,10 @@ pub unsafe extern "C" fn reset() {
     context_frame.return_address = process::process_main as u32;
     context_frame.xpsr = 0x0100_0000;
 
-    process_exec(ps_stack);
-
-    hprintln!("process end");
+    let mut next_ps_stack = ps_stack;
+    for _ in 0..10 {
+        next_ps_stack = process_exec(next_ps_stack);
+    }
 
     loop {}
 }
