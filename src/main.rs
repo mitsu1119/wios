@@ -2,6 +2,7 @@
 #![no_main]
 
 mod reset;
+#[allow(dead_code)]
 mod systick;
 mod vector_table;
 
