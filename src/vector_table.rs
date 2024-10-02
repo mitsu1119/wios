@@ -1,4 +1,4 @@
-use crate::reset;
+use crate::{reset, systick};
 
 // vector table のエントリ
 pub union Vector {
@@ -19,7 +19,6 @@ impl Vector {
 // デフォルトの例外ハンドラ
 #[no_mangle]
 pub extern "C" fn default_exception_handler() {
-    let _x = 10;
     loop {}
 }
 
@@ -40,5 +39,5 @@ pub static EXCEPTIONS: [Vector; 15] = [
     Vector::new(default_exception_handler), // 12. DebugMonitor
     Vector::reserved(),
     Vector::new(default_exception_handler), // 14. PendSV
-    Vector::new(default_exception_handler), // 15. SysTick
+    Vector::new(systick::systick),          // 15. SysTick
 ];

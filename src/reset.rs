@@ -2,6 +2,8 @@ use core::ptr::{self, addr_of, addr_of_mut};
 
 use cortex_m_semihosting::hprintln;
 
+use crate::systick;
+
 #[no_mangle]
 pub unsafe extern "C" fn reset() {
     extern "C" {
@@ -21,5 +23,13 @@ pub unsafe extern "C" fn reset() {
     ptr::copy_nonoverlapping(addr_of!(_sidata), addr_of_mut!(_sdata), data_len);
 
     hprintln!("Hello World!");
+
+    // SysTick initialize
+    hprintln!("SysTick init");
+    systick::enable();
+    systick::enable_interrupt();
+    systick::set_rvr(1 << 23);
+    systick::clear_cvr();
+
     loop {}
 }
