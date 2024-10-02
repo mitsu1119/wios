@@ -2,7 +2,7 @@ use core::ptr::{self, addr_of, addr_of_mut};
 
 use cortex_m_semihosting::hprintln;
 
-use crate::systick;
+use crate::{process::process_exec, systick};
 
 #[no_mangle]
 pub unsafe extern "C" fn reset() {
