@@ -2,7 +2,10 @@ use core::ptr::{self, addr_of, addr_of_mut};
 
 use cortex_m_semihosting::hprintln;
 
-use crate::{process::process_exec, systick};
+use crate::{
+    process::{self, process_exec, ContextFrame, PS_STACK, PS_STACK_SIZE},
+    systick,
+};
 
 #[no_mangle]
 pub unsafe extern "C" fn reset() {
@@ -23,6 +26,21 @@ pub unsafe extern "C" fn reset() {
     ptr::copy_nonoverlapping(addr_of!(_sidata), addr_of_mut!(_sdata), data_len);
 
     systick_init();
+
+    let ps_stack = addr_of!(PS_STACK) as u32 + PS_STACK_SIZE as u32 - 0x20;
+    let context_frame: &mut ContextFrame = &mut *(ps_stack as *mut ContextFrame);
+    context_frame.r0 = 0;
+    context_frame.r1 = 0;
+    context_frame.r2 = 0;
+    context_frame.r3 = 0;
+    context_frame.r12 = 0;
+    context_frame.lr = 0;
+    context_frame.return_address = process::process_main as u32;
+    context_frame.xpsr = 0x0100_0000;
+
+    process_exec(ps_stack);
+
+    hprintln!("process end");
 
     loop {}
 }
