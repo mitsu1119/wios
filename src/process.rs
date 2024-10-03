@@ -24,17 +24,23 @@ pub struct ContextFrame {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn process_exec(sp_process: u32) -> u32 {
+pub unsafe extern "C" fn process_exec(sp_process: u32, process_regs: &mut [u32; 8]) -> u32 {
     let mut next_sp: u32;
     asm!(
+        // カーネル側のレジスタを退避
         "push {{r4, r5, r6, r7, lr}}",
         "push {{r8, r9, r10, r11}}",
+        // プロセスの SP を設定
         "msr psp, {sp_process}",
+        // プロセスのレジスタを復元
+        "ldmia {process_regs}, {{r4-r11}}",
         "svc 0",
+        "stmia {process_regs}, {{r4-r11}}",
         "mrs {next_sp}, psp",
         "pop {{r8, r9, r10, r11}}",
         "pop {{r4, r5, r6, r7, lr}}",
         sp_process = in(reg) sp_process,
+        process_regs = in(reg) process_regs,
         next_sp = out(reg) next_sp,
     );
     next_sp
@@ -42,6 +48,7 @@ pub unsafe extern "C" fn process_exec(sp_process: u32) -> u32 {
 
 pub struct Process {
     sp_process: u32,
+    regs: [u32; 8],
 }
 
 impl Process {
@@ -59,14 +66,18 @@ impl Process {
         context_frame.return_address = ps_main as u32;
         context_frame.xpsr = 0x0100_0000;
 
-        Self { sp_process }
+        Self {
+            sp_process,
+            regs: [0; 8],
+        }
     }
 
     pub fn exec(&mut self) {
-        self.sp_process = unsafe { process_exec(self.sp_process) };
+        self.sp_process = unsafe { process_exec(self.sp_process, &mut self.regs) };
     }
 }
 
+#[no_mangle]
 pub extern "C" fn process_main() -> ! {
     let mut cnt = 0;
     loop {

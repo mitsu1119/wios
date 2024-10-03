@@ -2,6 +2,8 @@
 #![no_main]
 #![feature(naked_functions)]
 
+#[allow(dead_code)]
+mod linked_list;
 mod process;
 mod reset;
 mod svcall;
