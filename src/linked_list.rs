@@ -42,6 +42,27 @@ impl<T> LinkedList<T> {
         }
     }
 
+    pub fn pop_item(&mut self) -> Option<&mut LinkedListItem<T>> {
+        if let Some(mut head) = self.head {
+            let res = unsafe { head.as_mut() };
+            self.head = res.next;
+            if self.head.is_none() {
+                self.last = None;
+            }
+            Some(res)
+        } else {
+            None
+        }
+    }
+
+    pub fn look(&mut self) -> Option<&mut T> {
+        if let Some(mut head) = self.head {
+            Some(unsafe { head.as_mut() })
+        } else {
+            None
+        }
+    }
+
     pub fn is_empty(&self) -> bool {
         self.head.is_none()
     }
