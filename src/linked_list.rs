@@ -1,6 +1,9 @@
 #![cfg_attr(test, no_std)]
 
-use core::ptr::NonNull;
+use core::{
+    ops::{Deref, DerefMut},
+    ptr::NonNull,
+};
 
 pub struct LinkedList<T> {
     head: Option<NonNull<LinkedListItem<T>>>,
@@ -26,11 +29,14 @@ impl<T> LinkedList<T> {
         }
     }
 
-    pub fn pop(&mut self) -> Option<&LinkedListItem<T>> {
+    pub fn pop(&mut self) -> Option<&T> {
         if let Some(head) = self.head {
             let res = unsafe { head.as_ref() };
             self.head = res.next;
-            Some(res)
+            if self.head.is_none() {
+                self.last = None;
+            }
+            Some(res.deref())
         } else {
             None
         }
@@ -53,6 +59,19 @@ impl<T> LinkedListItem<T> {
     }
 }
 
+impl<T> Deref for LinkedListItem<T> {
+    type Target = T;
+    fn deref(&self) -> &Self::Target {
+        &self.value
+    }
+}
+
+impl<T> DerefMut for LinkedListItem<T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.value
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::{LinkedList, LinkedListItem};
@@ -66,8 +85,20 @@ mod test {
         list.push(&mut val1);
         list.push(&mut val2);
 
-        assert_eq!(list.pop(), Some(val1).as_ref());
-        assert_eq!(list.pop(), Some(val2).as_ref());
+        assert_eq!(list.pop(), Some(&1));
+        assert_eq!(list.pop(), Some(&2));
+        assert!(list.is_empty());
+
+        let mut val3 = LinkedListItem::new(3);
+        list.push(&mut val3);
+        assert_eq!(list.pop(), Some(&3));
+        assert_eq!(list.pop(), None);
+        assert!(list.is_empty());
+
+        list.push(&mut val1);
+        list.push(&mut val3);
+        assert_eq!(list.pop(), Some(&1));
+        assert_eq!(list.pop(), Some(&3));
         assert!(list.is_empty());
     }
 }
