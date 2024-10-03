@@ -35,6 +35,10 @@ impl<T> LinkedList<T> {
             None
         }
     }
+
+    pub fn is_empty(&self) -> bool {
+        self.head.is_none()
+    }
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -64,5 +68,6 @@ mod test {
 
         assert_eq!(list.pop(), Some(val1).as_ref());
         assert_eq!(list.pop(), Some(val2).as_ref());
+        assert!(list.is_empty());
     }
 }
