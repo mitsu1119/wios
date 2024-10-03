@@ -34,7 +34,7 @@ SECTIONS {
 
     _sidata = LOADADDR(.data);
 
-	.ps_stack ALIGN(0x08) : {
-		KEEP(*(.ps_stack .ps_stack.*));
-	} > RAM
+    .ps_stack ALIGN(0x08) : {
+        KEEP(*(.ps_stack .ps_stack.*));
+    } > RAM
 }
