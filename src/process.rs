@@ -11,6 +11,10 @@ pub struct PsStack(pub MaybeUninit<[u8; PS_STACK_SIZE]>);
 #[no_mangle]
 pub static PS_STACK: PsStack = PsStack(MaybeUninit::uninit());
 
+#[link_section = ".ps_stack2"]
+#[no_mangle]
+pub static PS_STACK2: PsStack = PsStack(MaybeUninit::uninit());
+
 #[repr(C)]
 pub struct ContextFrame {
     pub r0: u32,
@@ -78,10 +82,22 @@ impl Process {
 }
 
 #[no_mangle]
-pub extern "C" fn process_main() -> ! {
+pub extern "C" fn process_main1() -> ! {
     let mut cnt = 0;
     loop {
-        hprintln!("process_main {}", cnt);
+        hprintln!("process_main1 {}", cnt);
+        cnt += 1;
+        unsafe {
+            asm!("svc 0");
+        }
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn process_main2() -> ! {
+    let mut cnt = 0;
+    loop {
+        hprintln!("process_main2 {}", cnt);
         cnt += 1;
         unsafe {
             asm!("svc 0");

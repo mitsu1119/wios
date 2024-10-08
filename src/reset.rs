@@ -3,7 +3,9 @@ use core::ptr::{self, addr_of, addr_of_mut};
 use cortex_m_semihosting::hprintln;
 
 use crate::{
-    process::{self, Process, PS_STACK},
+    linked_list::LinkedListItem,
+    process::{self, Process, PS_STACK, PS_STACK2},
+    scheduler::Scheduler,
     systick,
 };
 
@@ -27,10 +29,13 @@ pub unsafe extern "C" fn reset() {
 
     systick_init();
 
-    let mut ps1 = Process::new(&PS_STACK, process::process_main);
-    for _ in 0..10 {
-        ps1.exec();
-    }
+    let mut ps1 = LinkedListItem::new(Process::new(&PS_STACK, process::process_main1));
+    let mut ps2 = LinkedListItem::new(Process::new(&PS_STACK2, process::process_main2));
+    let mut scheduler = Scheduler::new();
+    scheduler.register(&mut ps1);
+    scheduler.register(&mut ps2);
+
+    scheduler.exec();
 
     loop {}
 }

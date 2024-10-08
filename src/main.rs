@@ -6,6 +6,7 @@
 mod linked_list;
 mod process;
 mod reset;
+mod scheduler;
 mod svcall;
 #[allow(dead_code)]
 mod systick;

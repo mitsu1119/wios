@@ -37,4 +37,8 @@ SECTIONS {
     .ps_stack ALIGN(0x08) : {
         KEEP(*(.ps_stack .ps_stack.*));
     } > RAM
+
+    .ps_stack2 ALIGN(0x08) : {
+        KEEP(*(.ps_stack2 .ps_stack2.*));
+    } > RAM
 }
