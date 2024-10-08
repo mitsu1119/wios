@@ -5,6 +5,8 @@
 #[allow(dead_code)]
 mod linked_list;
 mod process;
+#[allow(dead_code)]
+mod register;
 mod reset;
 mod scheduler;
 mod svcall;
