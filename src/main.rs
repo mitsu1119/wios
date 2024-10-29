@@ -4,6 +4,8 @@
 
 #[allow(dead_code)]
 mod linked_list;
+mod peripheral;
+mod pins;
 #[allow(dead_code)]
 mod port;
 mod process;
