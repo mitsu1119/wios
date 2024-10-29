@@ -4,6 +4,8 @@
 
 #[allow(dead_code)]
 mod linked_list;
+#[allow(dead_code)]
+mod port;
 mod process;
 #[allow(dead_code)]
 mod register;

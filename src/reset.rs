@@ -4,6 +4,7 @@ use cortex_m_semihosting::hprintln;
 
 use crate::{
     linked_list::LinkedListItem,
+    port::{Port, PortGroup},
     process::{self, Process, PS_STACK, PS_STACK2},
     scheduler::Scheduler,
     systick,
@@ -36,6 +37,11 @@ pub unsafe extern "C" fn reset() {
     scheduler.register(&mut ps2);
 
     scheduler.exec();
+
+    let PA = PortGroup::get_port(0);
+    let PB = PortGroup::get_port(1);
+    let PC = PortGroup::get_port(2);
+    let PD = PortGroup::get_port(3);
 
     loop {}
 }
