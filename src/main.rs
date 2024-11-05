@@ -5,10 +5,12 @@
 
 #[allow(dead_code)]
 mod linked_list;
+#[allow(dead_code)]
 mod peripheral;
 mod pin;
 #[allow(dead_code)]
 mod port;
+#[allow(dead_code)]
 mod port_reg;
 mod process;
 #[allow(dead_code)]

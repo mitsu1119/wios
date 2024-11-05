@@ -1,4 +1,4 @@
-use crate::register::{RO, RW, WO};
+use crate::register::{RO, RW};
 
 pub struct PortReg<'a> {
     dir: RW<'a, u32>,
