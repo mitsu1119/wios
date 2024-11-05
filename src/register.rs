@@ -4,17 +4,23 @@ use core::{
 };
 
 #[repr(transparent)]
-pub struct RO<T>
+pub struct RO<'a, T>
 where
     T: Copy,
 {
-    addr: UnsafeCell<T>,
+    addr: &'a mut UnsafeCell<T>,
 }
 
-impl<T> RO<T>
+impl<'a, T> RO<'a, T>
 where
     T: Copy,
 {
+    pub fn new(addr: *mut T) -> Self {
+        Self {
+            addr: unsafe { UnsafeCell::from_mut(&mut *addr) },
+        }
+    }
+
     #[inline(always)]
     pub fn read(&self) -> T {
         unsafe { read_volatile(self.addr.get()) }
@@ -22,17 +28,49 @@ where
 }
 
 #[repr(transparent)]
-pub struct RW<T>
+pub struct W<'a, T>
 where
     T: Copy,
 {
-    addr: UnsafeCell<T>,
+    addr: &'a UnsafeCell<T>,
 }
 
-impl<T> RW<T>
+impl<'a, T> W<'a, T>
 where
     T: Copy,
 {
+    pub fn new(addr: *mut T) -> Self {
+        Self {
+            addr: unsafe { UnsafeCell::from_mut(&mut *addr) },
+        }
+    }
+
+    #[inline(always)]
+    pub fn write(&self, val: T) {
+        unsafe {
+            write_volatile(self.addr.get(), val);
+        }
+    }
+}
+
+#[repr(transparent)]
+pub struct RW<'a, T>
+where
+    T: Copy,
+{
+    addr: &'a UnsafeCell<T>,
+}
+
+impl<'a, T> RW<'a, T>
+where
+    T: Copy,
+{
+    pub fn new(addr: *mut T) -> Self {
+        Self {
+            addr: unsafe { UnsafeCell::from_mut(&mut *addr) },
+        }
+    }
+
     #[inline(always)]
     pub fn read(&self) -> T {
         unsafe { read_volatile(self.addr.get()) }

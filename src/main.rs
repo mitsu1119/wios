@@ -1,6 +1,7 @@
 #![no_std]
 #![no_main]
 #![feature(naked_functions)]
+#![feature(unsafe_cell_from_mut)]
 
 #[allow(dead_code)]
 mod linked_list;
