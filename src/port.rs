@@ -1,13 +1,15 @@
-use core::ptr::addr_of;
+use crate::port_reg::PortReg;
 
-pub struct Port {
+pub struct Port<'a> {
     base: *const u32,
+    port_reg: PortReg<'a>,
 }
 
-impl Port {
-    pub fn new(base: u32) -> Self {
+impl<'a> Port<'a> {
+    pub fn new(base: *const u32) -> Self {
         Self {
-            base: addr_of!(base),
+            base,
+            port_reg: PortReg::new(base as u32),
         }
     }
 }

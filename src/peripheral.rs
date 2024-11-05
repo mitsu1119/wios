@@ -3,17 +3,17 @@ use crate::port::Port;
 static mut PERIPHERAL_USED: bool = false;
 
 #[allow(non_snake_case)]
-pub struct Peripheral {
-    PA: Port,
-    PB: Port,
-    PC: Port,
-    PD: Port,
+pub struct Peripheral<'a> {
+    PA: Port<'a>,
+    PB: Port<'a>,
+    PC: Port<'a>,
+    PD: Port<'a>,
 }
 
-impl Peripheral {
-    fn get_port(offset: u32) -> Port {
+impl<'a> Peripheral<'a> {
+    fn get_port(offset: u32) -> Port<'a> {
         const PORT_BASE: u32 = 0x40008000;
-        Port::new(PORT_BASE + 0x80 * offset)
+        Port::new((PORT_BASE + 0x80 * offset) as *const u32)
     }
 
     pub fn take() -> Option<Self> {
