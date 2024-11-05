@@ -28,14 +28,14 @@ where
 }
 
 #[repr(transparent)]
-pub struct W<'a, T>
+pub struct WO<'a, T>
 where
     T: Copy,
 {
     addr: &'a UnsafeCell<T>,
 }
 
-impl<'a, T> W<'a, T>
+impl<'a, T> WO<'a, T>
 where
     T: Copy,
 {

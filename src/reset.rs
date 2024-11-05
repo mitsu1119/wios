@@ -5,7 +5,6 @@ use cortex_m_semihosting::hprintln;
 use crate::{
     linked_list::LinkedListItem,
     peripheral::Peripheral,
-    port::PortGroup,
     process::{self, Process, PS_STACK, PS_STACK2},
     scheduler::Scheduler,
     systick,
@@ -42,6 +41,20 @@ pub unsafe extern "C" fn reset() {
     let peripheral = Peripheral::take().unwrap();
 
     /*
+    Pin<PinID> { port_regs: PortReg }
+
+    Port<PortGroupNum> {
+        Pin<0>,
+        Pin<1>,
+        ...
+    }
+
+    LED {
+        new(peripheral) {
+            init(peripheral.PA.pin15)
+        }
+    }
+
     let peripheral = Peripheral::new();
     let pa_pins = peripheral.PA;
     let led = pa_pins.led;
