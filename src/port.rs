@@ -1,15 +1,21 @@
+use core::marker::PhantomData;
+
 use crate::port_reg::PortReg;
 
-pub struct Port<'a> {
-    base: *const u32,
-    port_reg: PortReg<'a>,
+pub trait PortID {
+    const BASE_ADDR: u32;
 }
 
-impl<'a> Port<'a> {
-    pub fn new(base: *const u32) -> Self {
+pub struct Port<'a, T: PortID> {
+    port_reg: PortReg<'a>,
+    _marker: PhantomData<&'a T>,
+}
+
+impl<'a, T: PortID> Port<'a, T> {
+    pub fn new() -> Self {
         Self {
-            base,
-            port_reg: PortReg::new(base as u32),
+            port_reg: PortReg::new(T::BASE_ADDR),
+            _marker: PhantomData,
         }
     }
 }

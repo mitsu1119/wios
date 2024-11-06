@@ -1,32 +1,46 @@
-use crate::port::Port;
+use crate::port::{Port, PortID};
 
 static mut PERIPHERAL_USED: bool = false;
 
-#[allow(non_snake_case)]
 pub struct Peripheral<'a> {
-    PA: Port<'a>,
-    PB: Port<'a>,
-    PC: Port<'a>,
-    PD: Port<'a>,
+    pub pa: Port<'a, PA>,
+    pub pb: Port<'a, PB>,
+    pub pc: Port<'a, PC>,
+    pub pd: Port<'a, PD>,
 }
 
 impl<'a> Peripheral<'a> {
-    fn get_port(offset: u32) -> Port<'a> {
-        const PORT_BASE: u32 = 0x40008000;
-        Port::new((PORT_BASE + 0x80 * offset) as *const u32)
-    }
-
     pub fn take() -> Option<Self> {
         if unsafe { PERIPHERAL_USED } {
             None
         } else {
             unsafe { PERIPHERAL_USED = true };
             Some(Self {
-                PA: Self::get_port(0),
-                PB: Self::get_port(1),
-                PC: Self::get_port(2),
-                PD: Self::get_port(3),
+                pa: Port::<'a, PA>::new(),
+                pb: Port::<'a, PB>::new(),
+                pc: Port::<'a, PC>::new(),
+                pd: Port::<'a, PD>::new(),
             })
         }
     }
+}
+
+pub struct PA {}
+impl PortID for PA {
+    const BASE_ADDR: u32 = 0x40008000;
+}
+
+pub struct PB {}
+impl PortID for PB {
+    const BASE_ADDR: u32 = 0x40008000 + 0x80;
+}
+
+pub struct PC {}
+impl PortID for PC {
+    const BASE_ADDR: u32 = 0x40008000 + 0x80 * 2;
+}
+
+pub struct PD {}
+impl PortID for PD {
+    const BASE_ADDR: u32 = 0x40008000 + 0x80 * 3;
 }

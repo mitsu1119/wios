@@ -38,7 +38,8 @@ pub unsafe extern "C" fn reset() {
 
     scheduler.exec();
 
-    let _peripheral = Peripheral::take().unwrap();
+    let peripheral = Peripheral::take().unwrap();
+    let _pa_pins = peripheral.pa;
 
     /*
     Pin<PinID> { port_regs: PortReg }
